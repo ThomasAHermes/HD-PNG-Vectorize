@@ -21,14 +21,91 @@ function getOptimalAspectRatio(width: number, height: number): string {
   return closest.id;
 }
 
+// Helper to convert base64 image to desired format
+const convertImageFormat = async (base64: string, format: 'jpeg' | 'png' | 'svg'): Promise<string> => {
+  // Shortcut for PNG if source is already PNG
+  if (format === 'png' && base64.startsWith('data:image/png')) return base64;
+
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    // Ensure we handle cross-origin if needed, though usually data URIs are fine.
+    img.crossOrigin = "Anonymous"; 
+    
+    img.onload = () => {
+      try {
+        if (format === 'svg') {
+          // Wrap in SVG with strict positioning
+          const svg = `
+            <svg 
+              xmlns="http://www.w3.org/2000/svg" 
+              xmlns:xlink="http://www.w3.org/1999/xlink" 
+              width="${img.width}" 
+              height="${img.height}" 
+              viewBox="0 0 ${img.width} ${img.height}"
+            >
+              <image 
+                href="${base64}" 
+                xlink:href="${base64}"
+                x="0" 
+                y="0" 
+                width="${img.width}" 
+                height="${img.height}" 
+                preserveAspectRatio="xMidYMid meet" 
+              />
+            </svg>
+          `;
+          const svgBase64 = 'data:image/svg+xml;base64,' + btoa(svg);
+          resolve(svgBase64);
+          return;
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          reject(new Error('Canvas context not available'));
+          return;
+        }
+
+        if (format === 'jpeg') {
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+        }
+        
+        ctx.drawImage(img, 0, 0);
+        
+        if (format === 'jpeg') {
+           const result = canvas.toDataURL('image/jpeg', 0.95);
+           resolve(result);
+        } else {
+           const result = canvas.toDataURL('image/png');
+           resolve(result);
+        }
+      } catch (err) {
+        reject(err);
+      }
+    };
+    
+    img.onerror = (e) => {
+      console.error("Image loading error", e);
+      reject(new Error("Failed to load image for conversion"));
+    };
+    
+    img.src = base64;
+  });
+};
+
 function App() {
   const [appState, setAppState] = useState<AppState>(AppState.IDLE);
   const [sourceImage, setSourceImage] = useState<string | null>(null);
+  const [rawResultImage, setRawResultImage] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [mimeType, setMimeType] = useState<string>('image/png');
   const [selectedRatio, setSelectedRatio] = useState<string>('1:1');
   const [sourceRatio, setSourceRatio] = useState<string>('1:1');
   const [removeText, setRemoveText] = useState<boolean>(true);
+  const [outputFormat, setOutputFormat] = useState<'jpeg' | 'png' | 'svg'>('jpeg');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const processLoadedImage = (base64: string, type: string) => {
@@ -39,6 +116,7 @@ function App() {
       setMimeType(type);
       setSourceRatio(ratio);
       setSelectedRatio('1:1'); 
+      setRawResultImage(null);
       setResultImage(null);
       setAppState(AppState.IDLE);
       setErrorMsg(null);
@@ -72,6 +150,30 @@ function App() {
     return () => window.removeEventListener('paste', handlePaste);
   }, []);
 
+  useEffect(() => {
+    let isMounted = true;
+    const updateFormat = async () => {
+      if (rawResultImage) {
+        // Force loading state when raw image exists but result image is changing
+        if (isMounted) setResultImage(null); 
+
+        try {
+          const formatted = await convertImageFormat(rawResultImage, outputFormat);
+          if (isMounted) {
+             setResultImage(formatted);
+          }
+        } catch (e) {
+          console.error("Format conversion failed", e);
+          if (isMounted) setErrorMsg("Failed to format image.");
+        }
+      } else {
+        if (isMounted) setResultImage(null);
+      }
+    };
+    updateFormat();
+    return () => { isMounted = false; };
+  }, [rawResultImage, outputFormat]);
+
   const handleImageSelected = (base64: string, type: string) => {
     processLoadedImage(base64, type);
   };
@@ -80,12 +182,13 @@ function App() {
     if (!sourceImage) return;
     setAppState(AppState.PROCESSING);
     setErrorMsg(null);
-    setResultImage(null); // Clear previous result to avoid confusion
+    setRawResultImage(null);
+    setResultImage(null);
 
     try {
       const effectiveRatio = selectedRatio === 'source' ? sourceRatio : selectedRatio;
       const generatedImageBase64 = await generateVectorizedImage(sourceImage, mimeType, effectiveRatio, removeText);
-      setResultImage(generatedImageBase64);
+      setRawResultImage(generatedImageBase64);
       setAppState(AppState.SUCCESS);
     } catch (err) {
       console.error(err);
@@ -96,23 +199,28 @@ function App() {
 
   const handleReset = () => {
     setSourceImage(null);
+    setRawResultImage(null);
     setResultImage(null);
     setAppState(AppState.IDLE);
     setErrorMsg(null);
     setSelectedRatio('1:1');
     setSourceRatio('1:1');
     setRemoveText(true);
+    setOutputFormat('jpeg');
   };
 
   const handleDownload = () => {
     if (!resultImage) return;
     const link = document.createElement('a');
     link.href = resultImage;
-    link.download = `hd-result-${Date.now()}.png`;
+    link.download = `hd-result-${Date.now()}.${outputFormat}`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
+
+  // Determine if we are in a loading state (either generating or converting)
+  const isProcessing = appState === AppState.PROCESSING || (appState === AppState.SUCCESS && !resultImage && !!rawResultImage);
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 selection:bg-blue-500/30 flex flex-col">
@@ -126,7 +234,7 @@ function App() {
               </svg>
             </div>
             <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-              Img to HD PNG
+              Redraw Images to HQ
             </h1>
           </div>
           <div className="flex items-center gap-2">
@@ -147,8 +255,8 @@ function App() {
         {!sourceImage && (
           <div className="max-w-3xl mx-auto mt-12 w-full">
             <h2 className="text-3xl md:text-4xl font-bold text-center mb-6 leading-tight">
-              Turn raster images into <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">high-definition PNGs.</span>
+              Easy to use image redrawing tool into clean <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">high-definition graphics.</span>
             </h2>
             <ImageDropzone onImageSelected={handleImageSelected} />
             <div className="mt-8 text-center text-slate-500 text-sm">
@@ -179,16 +287,17 @@ function App() {
                 <button
                   onClick={handleReset}
                   className="px-6 h-12 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition font-medium"
-                  disabled={appState === AppState.PROCESSING}
+                  disabled={isProcessing}
                 >
                   Clear
                 </button>
 
+                {/* Aspect Ratio Selector */}
                 <div className="relative h-12 flex-shrink-0">
                   <select
                     value={selectedRatio}
                     onChange={(e) => setSelectedRatio(e.target.value)}
-                    disabled={appState === AppState.PROCESSING}
+                    disabled={isProcessing}
                     className="h-full pl-4 pr-10 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-medium cursor-pointer disabled:opacity-50"
                   >
                     <option value="1:1">1:1 (Square)</option>
@@ -203,20 +312,38 @@ function App() {
                   </div>
                 </div>
 
+                 {/* Format Selector */}
+                <div className="relative h-12 flex-shrink-0">
+                  <select
+                    value={outputFormat}
+                    onChange={(e) => setOutputFormat(e.target.value as 'jpeg' | 'png' | 'svg')}
+                    className="h-full pl-4 pr-10 rounded-xl bg-slate-800 text-slate-300 border border-slate-700 hover:border-slate-600 focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none font-medium cursor-pointer disabled:opacity-50"
+                  >
+                    <option value="jpeg">JPEG</option>
+                    <option value="png">PNG</option>
+                    <option value="svg">SVG</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-3 flex items-center pointer-events-none text-slate-400">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                </div>
+
                 <label className={`
                   flex items-center gap-2 px-4 h-12 rounded-xl border cursor-pointer transition-all
                   ${removeText 
                     ? 'bg-blue-500/10 border-blue-500/50 text-blue-300' 
                     : 'bg-slate-800 border-slate-700 text-slate-400 hover:border-slate-600'
                   }
-                  ${appState === AppState.PROCESSING ? 'opacity-50 cursor-not-allowed' : ''}
+                  ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}
                 `}>
                   <div className="relative flex items-center">
                     <input
                       type="checkbox"
                       checked={removeText}
                       onChange={(e) => setRemoveText(e.target.checked)}
-                      disabled={appState === AppState.PROCESSING}
+                      disabled={isProcessing}
                       className="sr-only peer"
                     />
                     <div className="w-5 h-5 border-2 rounded border-slate-600 peer-checked:border-blue-500 peer-checked:bg-blue-500 transition-colors flex items-center justify-center">
@@ -232,9 +359,9 @@ function App() {
 
                 <button
                   onClick={handleGenerate}
-                  disabled={appState === AppState.PROCESSING}
+                  disabled={isProcessing}
                   className={`flex-1 h-12 px-6 rounded-xl font-bold shadow-lg transition-all flex items-center justify-center gap-2
-                    ${appState === AppState.PROCESSING 
+                    ${isProcessing 
                       ? 'bg-slate-800 cursor-not-allowed text-slate-500' 
                       : appState === AppState.SUCCESS 
                         ? 'bg-emerald-600 hover:bg-emerald-500 text-white'
@@ -242,7 +369,7 @@ function App() {
                     }
                   `}
                 >
-                  {appState === AppState.PROCESSING ? (
+                  {isProcessing ? (
                     <>
                       <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                         <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -294,7 +421,7 @@ function App() {
                    </div>
                 )}
 
-                {appState === AppState.PROCESSING && (
+                {isProcessing && (
                   <div className="flex flex-col items-center">
                     <div className="relative">
                       <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
@@ -302,11 +429,13 @@ function App() {
                         <div className="h-8 w-8 bg-blue-500/10 rounded-full animate-pulse"></div>
                       </div>
                     </div>
-                    <span className="text-slate-400 mt-6 font-medium animate-pulse">Redrawing at High Fidelity...</span>
+                    <span className="text-slate-400 mt-6 font-medium animate-pulse">
+                      {appState === AppState.PROCESSING ? 'Redrawing at High Fidelity...' : 'Formatting...'}
+                    </span>
                   </div>
                 )}
 
-                {resultImage && (
+                {!isProcessing && resultImage && (
                   <div className="w-full h-full flex items-center justify-center p-2">
                     <img 
                       src={resultImage} 
@@ -327,7 +456,7 @@ function App() {
                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clipRule="evenodd" />
                      </svg>
-                     Download PNG
+                     Download {outputFormat.toUpperCase()}
                    </button>
                 </div>
               )}

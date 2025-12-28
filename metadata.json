@@ -1,5 +1,5 @@
 {
-  "name": "Img to HD PNG",
-  "description": "A professional tool to redraw images into clean high-definition graphics using Gemini 2.5 Flash.",
+  "name": "Redrawing images to HQ",
+  "description": "Easy to use image redrawing tool into clean high-definition graphics.",
   "requestFramePermissions": []
 }
