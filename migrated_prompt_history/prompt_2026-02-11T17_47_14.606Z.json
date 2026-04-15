@@ -1,0 +1,298 @@
+[
+  {
+    "id": 21,
+    "author": "user",
+    "payload": {
+      "type": "text",
+      "text": "Image vectorizer app",
+      "files": [],
+      "fileUploads": [],
+      "cMarkNode": {}
+    },
+    "createdTimestamp": {
+      "seconds": 1770831480,
+      "nanos": 815000000
+    }
+  },
+  {
+    "id": 22,
+    "author": "model",
+    "payload": {
+      "type": "thinking",
+      "text": "**Defining the Project Scope**\n\nOkay, I've got a handle on the user's need: an \"Image Vectorizer App\". The core's straightforward - raster to vector, probably SVG. Now, since I'm all about Gemini, I'm thinking how to best leverage its power in this tool. I need to figure out what functionality should I consider for the AI integration.\n\n\n**Refining the AI Integration**\n\nI've been drilling down on how to best integrate Gemini. Pure SVG code generation is off the table, so I'm honing in on a hybrid approach. Option B, the \"AI Stylized Vectorizer\", feels right. Upload, analyze, stylized SVG output. The key will be the quality of Gemini's analysis and the prompt engineering. I'm visualizing a \"low poly\" aesthetic as a good starting point.\n\n\n**Outlining Feature Set**\n\nI'm now nailing down the app's features. We'll have image upload with preview, style selection (minimalist, line art, etc.), Gemini API interaction to generate SVG, and display the result with a download option. The core is the prompt engineering; the API will receive \"Convert this image to a [style] SVG\". Considering `gemini-2.5-flash-image` for analysis and code output.\n\n\n**Adding Feature Ideas**\n\nI'm now thinking about more features. I should consider a history or gallery of generated vectors, though that would be in-memory for this version.\n\nI'm also setting up the tech stack. React 18+ and TypeScript are my go-tos, and I'll use Tailwind CSS for styling and Lucide React for icons. The `@google/genai` SDK is essential for the Gemini API.\n\nI've been working on prompt engineering. I'll be using `gemini-2.5-flash-image` with a prompt that emphasizes SVG art. The key will be ensuring that I can avoid truncation. I will check for outputs that are too complex.\nFinally, I'm defining the project structure. I'm imagining a basic structure with an `index.html`, `index.tsx`, `App.tsx`, and component-specific files. Also, I'll have a `types.ts` for type definitions and a `metadata.json` file.\n\n\n**Planning Implementation Steps**\n\nI'm now outlining the implementation. I need to handle setup, UI layout (split screen seems best), and the upload process, focusing on Base64 encoding. I will set up the Gemini service, initializing `GoogleGenAI` and creating the `vectorizeImage` function to handle the prompt and SVG generation. I'm considering using `dangerouslySetInnerHTML` for SVG rendering. Lastly, I'll add loading states, error handling, and copy/download features.\n\nI'm also clarifying the \"vectorization\" aspect; it's semantic, reconstructing the image idea in SVG, not just pixel tracing. I will clearly label the app as an \"AI Semantic Vectorizer.\"\n\n\n**Refining the SVG Generation**\n\nI'm now focusing on the SVG generation prompt. I'm refining the Gemini call to ensure that Gemini outputs valid and artistic SVG code. The refined prompt now explicitly asks for an SVG code snippet and emphasizes artistic visual appeal, utilizing simple shapes while maintaining the original color palette. I'm also ensuring the use of pure SVG and avoiding external images. I'm currently working on addressing the constraints for file output in the XML format, Tailwind classes, and the API key.\n\nI am also considering adding zoom controls using transform scale for SVG viewing.\n\n\n",
+      "cMarkNode": {}
+    },
+    "createdTimestamp": {
+      "seconds": 1770831480,
+      "nanos": 815000000
+    },
+    "doneTimestamp": {
+      "seconds": 1770831500,
+      "nanos": 935000000
+    }
+  },
+  {
+    "id": 23,
+    "author": "model",
+    "payload": {
+      "type": "generationTable",
+      "entries": [
+        {
+          "path": "metadata.json",
+          "generationType": 0,
+          "isDone": true,
+          "description": "App metadata",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "{\n  \"name\": \"AI Vectorizer Studio\",\n  \"description\": \"Transform your raster images into clean, scalable SVG vector art using Gemini AI. Choose from various artistic styles like Minimalist, Geometric, and Line Art.\"\n}"
+            }
+          ]
+        },
+        {
+          "path": "index.html",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Root HTML file with Tailwind CSS",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "<!DOCTYPE html>\n<html lang=\"en\">\n  <head>\n    <meta charset=\"UTF-8\" />\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />\n    <title>AI Vectorizer Studio</title>\n    <script src=\"https://cdn.tailwindcss.com\"></script>\n    <link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap\" rel=\"stylesheet\">\n    <style>\n      body {\n        font-family: 'Inter', sans-serif;\n        background-color: #0f172a; /* Slate 900 */\n        color: #f8fafc;\n      }\n      /* Custom scrollbar for aesthetic feel */\n      ::-webkit-scrollbar {\n        width: 8px;\n        height: 8px;\n      }\n      ::-webkit-scrollbar-track {\n        background: #1e293b; \n      }\n      ::-webkit-scrollbar-thumb {\n        background: #475569; \n        border-radius: 4px;\n      }\n      ::-webkit-scrollbar-thumb:hover {\n        background: #64748b; \n      }\n    </style>\n  </head>\n  <body>\n    <div id=\"root\"></div>\n  </body>\n</html>"
+            }
+          ]
+        },
+        {
+          "path": "index.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "React entry point",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\n\nconst rootElement = document.getElementById('root');\nif (!rootElement) {\n  throw new Error(\"Could not find root element to mount to\");\n}\n\nconst root = ReactDOM.createRoot(rootElement);\nroot.render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);"
+            }
+          ]
+        },
+        {
+          "path": "types.ts",
+          "generationType": 0,
+          "isDone": true,
+          "description": "TypeScript definitions",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "export enum VectorStyle {\n  MINIMALIST = \"Minimalist Flat Design\",\n  GEOMETRIC = \"Geometric Shapes\",\n  LINE_ART = \"Continuous Line Art\",\n  LOW_POLY = \"Low Poly\",\n  PIXEL_ART = \"Pixel Art Style (SVG Rects)\",\n  ABSTRACT = \"Abstract Artistic\",\n  WIREFRAME = \"Technical Wireframe\",\n  POP_ART = \"Pop Art\"\n}\n\nexport interface VectorGenerationResult {\n  svgContent: string;\n  originalImage: string; // Base64\n  style: VectorStyle;\n  timestamp: number;\n}\n\nexport interface AppState {\n  currentImage: string | null;\n  isGenerating: boolean;\n  result: VectorGenerationResult | null;\n  error: string | null;\n  history: VectorGenerationResult[];\n}\n"
+            }
+          ]
+        },
+        {
+          "path": "services/geminiService.ts",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Gemini API integration for image to SVG conversion",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import { GoogleGenAI } from \"@google/genai\";\nimport { VectorStyle } from \"../types\";\n\nconst cleanSvgOutput = (text: string): string => {\n  // Remove markdown code blocks if present\n  let cleaned = text.replace(/```svg/g, '').replace(/```/g, '').trim();\n  \n  // Find the start and end of the SVG tag to ensure we only get the code\n  const startIndex = cleaned.indexOf('<svg');\n  const endIndex = cleaned.lastIndexOf('</svg>');\n  \n  if (startIndex !== -1 && endIndex !== -1) {\n    cleaned = cleaned.substring(startIndex, endIndex + 6);\n  }\n  \n  return cleaned;\n};\n\nexport const generateVectorFromImage = async (\n  base64Image: string,\n  style: VectorStyle\n): Promise<string> => {\n  if (!process.env.API_KEY) {\n    throw new Error(\"API Key is missing. Please set process.env.API_KEY.\");\n  }\n\n  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });\n  \n  // Clean the base64 string if it has the data prefix\n  const base64Data = base64Image.split(',')[1] || base64Image;\n\n  const prompt = `\n    You are an expert SVG artist and vectorizer.\n    Analyze the provided image and recreate it as a clean, efficient, and scalable SVG (Scalable Vector Graphics) code.\n    \n    Target Style: ${style}\n    \n    Requirements:\n    1. Output ONLY the raw SVG code. Do not include markdown formatting or explanations.\n    2. Ensure the SVG is self-contained (no external <image> tags with base64 data). It must be drawn using paths, rects, circles, etc.\n    3. Keep the complexity reasonable (under 4KB of text if possible) but visually representative.\n    4. Use the original image's dominant colors.\n    5. The SVG must be valid and renderable in a browser.\n    6. Ensure the viewBox matches the aspect ratio of the implied subject.\n  `;\n\n  try {\n    const response = await ai.models.generateContent({\n      model: 'gemini-2.5-flash-image',\n      contents: {\n        parts: [\n          {\n            inlineData: {\n              mimeType: 'image/jpeg', // Assuming JPEG/PNG, the API is flexible with this mime type usually\n              data: base64Data\n            }\n          },\n          {\n            text: prompt\n          }\n        ]\n      }\n    });\n\n    const text = response.text;\n    if (!text) {\n      throw new Error(\"No output received from Gemini.\");\n    }\n\n    return cleanSvgOutput(text);\n\n  } catch (error) {\n    console.error(\"Gemini Vectorization Error:\", error);\n    throw error;\n  }\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/Button.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Reusable Button component",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React from 'react';\nimport { Loader2 } from 'lucide-react';\n\ninterface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {\n  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';\n  isLoading?: boolean;\n  icon?: React.ReactNode;\n}\n\nexport const Button: React.FC<ButtonProps> = ({ \n  children, \n  variant = 'primary', \n  isLoading = false, \n  icon,\n  className = '',\n  disabled,\n  ...props \n}) => {\n  \n  const baseStyles = \"inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-900 disabled:opacity-50 disabled:cursor-not-allowed\";\n  \n  const variants = {\n    primary: \"bg-indigo-600 hover:bg-indigo-700 text-white focus:ring-indigo-500 shadow-lg shadow-indigo-500/20\",\n    secondary: \"bg-slate-700 hover:bg-slate-600 text-white focus:ring-slate-500\",\n    outline: \"border border-slate-600 text-slate-300 hover:border-slate-500 hover:text-white bg-transparent\",\n    ghost: \"text-slate-400 hover:text-white hover:bg-slate-800/50\"\n  };\n\n  return (\n    <button \n      className={`${baseStyles} ${variants[variant]} ${className}`}\n      disabled={disabled || isLoading}\n      {...props}\n    >\n      {isLoading ? (\n        <Loader2 className=\"w-5 h-5 mr-2 animate-spin\" />\n      ) : icon ? (\n        <span className=\"mr-2\">{icon}</span>\n      ) : null}\n      {children}\n    </button>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/ImageUploader.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Component for dragging and dropping or selecting images",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useCallback, useState } from 'react';\nimport { Upload, Image as ImageIcon, X } from 'lucide-react';\n\ninterface ImageUploaderProps {\n  currentImage: string | null;\n  onImageSelected: (base64: string) => void;\n  onClear: () => void;\n}\n\nexport const ImageUploader: React.FC<ImageUploaderProps> = ({ currentImage, onImageSelected, onClear }) => {\n  const [isDragging, setIsDragging] = useState(false);\n\n  const handleDragOver = useCallback((e: React.DragEvent) => {\n    e.preventDefault();\n    setIsDragging(true);\n  }, []);\n\n  const handleDragLeave = useCallback((e: React.DragEvent) => {\n    e.preventDefault();\n    setIsDragging(false);\n  }, []);\n\n  const handleDrop = useCallback((e: React.DragEvent) => {\n    e.preventDefault();\n    setIsDragging(false);\n    \n    if (e.dataTransfer.files && e.dataTransfer.files[0]) {\n      processFile(e.dataTransfer.files[0]);\n    }\n  }, []);\n\n  const handleFileInput = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {\n    if (e.target.files && e.target.files[0]) {\n      processFile(e.target.files[0]);\n    }\n  }, []);\n\n  const processFile = (file: File) => {\n    if (!file.type.startsWith('image/')) return;\n    \n    const reader = new FileReader();\n    reader.onload = (event) => {\n      if (event.target?.result && typeof event.target.result === 'string') {\n        onImageSelected(event.target.result);\n      }\n    };\n    reader.readAsDataURL(file);\n  };\n\n  if (currentImage) {\n    return (\n      <div className=\"relative group rounded-xl overflow-hidden border border-slate-700 bg-slate-800/50 shadow-xl\">\n        <img \n          src={currentImage} \n          alt=\"Source\" \n          className=\"w-full h-64 object-contain bg-slate-900/50\"\n        />\n        <div className=\"absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center\">\n          <button \n            onClick={onClear}\n            className=\"p-2 bg-red-500/80 hover:bg-red-600 text-white rounded-full transform hover:scale-110 transition-all\"\n          >\n            <X size={24} />\n          </button>\n        </div>\n        <div className=\"absolute top-2 left-2 bg-black/60 px-2 py-1 rounded text-xs font-mono text-slate-300 backdrop-blur-sm\">\n          Original Raster\n        </div>\n      </div>\n    );\n  }\n\n  return (\n    <div\n      onDragOver={handleDragOver}\n      onDragLeave={handleDragLeave}\n      onDrop={handleDrop}\n      className={`\n        relative h-64 border-2 border-dashed rounded-xl flex flex-col items-center justify-center text-center p-6 transition-all duration-300\n        ${isDragging \n          ? 'border-indigo-500 bg-indigo-500/10 scale-[1.02]' \n          : 'border-slate-700 bg-slate-800/30 hover:border-slate-600 hover:bg-slate-800/50'\n        }\n      `}\n    >\n      <input\n        type=\"file\"\n        accept=\"image/*\"\n        onChange={handleFileInput}\n        className=\"absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10\"\n      />\n      <div className=\"w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center mb-4 shadow-inner\">\n        {isDragging ? (\n          <Upload className=\"w-8 h-8 text-indigo-400 animate-bounce\" />\n        ) : (\n          <ImageIcon className=\"w-8 h-8 text-slate-500\" />\n        )}\n      </div>\n      <h3 className=\"text-lg font-medium text-slate-200 mb-2\">\n        {isDragging ? 'Drop image here' : 'Upload Image to Vectorize'}\n      </h3>\n      <p className=\"text-sm text-slate-400 max-w-xs\">\n        Drag and drop or click to browse. Supports JPG, PNG, WebP.\n      </p>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "components/SvgPreview.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Component to render and interact with the generated SVG",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useRef, useState, useEffect } from 'react';\nimport { Download, Copy, Check, ZoomIn, ZoomOut, Maximize } from 'lucide-react';\n\ninterface SvgPreviewProps {\n  svgContent: string;\n}\n\nexport const SvgPreview: React.FC<SvgPreviewProps> = ({ svgContent }) => {\n  const containerRef = useRef<HTMLDivElement>(null);\n  const [copied, setCopied] = useState(false);\n  const [scale, setScale] = useState(1);\n\n  const handleDownload = () => {\n    const blob = new Blob([svgContent], { type: 'image/svg+xml' });\n    const url = URL.createObjectURL(blob);\n    const a = document.createElement('a');\n    a.href = url;\n    a.download = `vector-art-${Date.now()}.svg`;\n    document.body.appendChild(a);\n    a.click();\n    document.body.removeChild(a);\n    URL.revokeObjectURL(url);\n  };\n\n  const handleCopy = () => {\n    navigator.clipboard.writeText(svgContent);\n    setCopied(true);\n    setTimeout(() => setCopied(false), 2000);\n  };\n\n  const zoomIn = () => setScale(s => Math.min(s + 0.5, 5));\n  const zoomOut = () => setScale(s => Math.max(s - 0.5, 0.5));\n  const resetZoom = () => setScale(1);\n\n  // Auto-fit logic could go here, but keeping it simple for now\n  \n  return (\n    <div className=\"flex flex-col h-full bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-2xl\">\n      {/* Toolbar */}\n      <div className=\"flex items-center justify-between px-4 py-3 bg-slate-800 border-b border-slate-700\">\n        <div className=\"flex items-center space-x-2\">\n          <span className=\"text-sm font-medium text-slate-300\">Vector Output</span>\n          <div className=\"px-2 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 text-xs border border-indigo-500/30\">\n             SVG\n          </div>\n        </div>\n        <div className=\"flex items-center space-x-1\">\n          <button onClick={zoomOut} className=\"p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors\" title=\"Zoom Out\">\n            <ZoomOut size={16} />\n          </button>\n           <button onClick={resetZoom} className=\"p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors text-xs font-mono w-12 text-center\" title=\"Reset Zoom\">\n            {Math.round(scale * 100)}%\n          </button>\n          <button onClick={zoomIn} className=\"p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors\" title=\"Zoom In\">\n            <ZoomIn size={16} />\n          </button>\n          <div className=\"w-px h-4 bg-slate-700 mx-2\" />\n          <button \n            onClick={handleCopy} \n            className=\"p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-slate-700 rounded transition-colors\"\n            title=\"Copy Code\"\n          >\n            {copied ? <Check size={16} /> : <Copy size={16} />}\n          </button>\n          <button \n            onClick={handleDownload}\n            className=\"p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 rounded transition-colors\"\n            title=\"Download SVG\"\n          >\n            <Download size={16} />\n          </button>\n        </div>\n      </div>\n\n      {/* SVG Container */}\n      <div className=\"flex-1 overflow-hidden relative bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-slate-900 flex items-center justify-center p-8\">\n        {/* Checkerboard background for transparency */}\n        <div className=\"absolute inset-0 opacity-10\" \n             style={{ \n               backgroundImage: 'linear-gradient(45deg, #333 25%, transparent 25%), linear-gradient(-45deg, #333 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #333 75%), linear-gradient(-45deg, transparent 75%, #333 75%)',\n               backgroundSize: '20px 20px',\n               backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' \n             }} \n        />\n        \n        <div \n          ref={containerRef}\n          className=\"relative z-10 transition-transform duration-300 ease-out origin-center shadow-2xl\"\n          style={{ transform: `scale(${scale})` }}\n          dangerouslySetInnerHTML={{ __html: svgContent }}\n        />\n      </div>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "App.tsx",
+          "generationType": 0,
+          "isDone": true,
+          "description": "Main Application Component",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useState, useEffect } from 'react';\nimport { Layers, Wand2, History, AlertCircle, ChevronRight, Zap } from 'lucide-react';\nimport { VectorStyle, VectorGenerationResult } from './types';\nimport { generateVectorFromImage } from './services/geminiService';\nimport { ImageUploader } from './components/ImageUploader';\nimport { SvgPreview } from './components/SvgPreview';\nimport { Button } from './components/Button';\n\nconst App: React.FC = () => {\n  const [currentImage, setCurrentImage] = useState<string | null>(null);\n  const [selectedStyle, setSelectedStyle] = useState<VectorStyle>(VectorStyle.MINIMALIST);\n  const [isGenerating, setIsGenerating] = useState(false);\n  const [error, setError] = useState<string | null>(null);\n  const [result, setResult] = useState<VectorGenerationResult | null>(null);\n  const [history, setHistory] = useState<VectorGenerationResult[]>([]);\n\n  const handleGenerate = async () => {\n    if (!currentImage) return;\n\n    setIsGenerating(true);\n    setError(null);\n\n    try {\n      const svgContent = await generateVectorFromImage(currentImage, selectedStyle);\n      \n      const newResult: VectorGenerationResult = {\n        svgContent,\n        originalImage: currentImage,\n        style: selectedStyle,\n        timestamp: Date.now()\n      };\n\n      setResult(newResult);\n      setHistory(prev => [newResult, ...prev]);\n    } catch (err: any) {\n      setError(err.message || \"Failed to generate vector. Please try again.\");\n    } finally {\n      setIsGenerating(false);\n    }\n  };\n\n  const loadFromHistory = (item: VectorGenerationResult) => {\n    setResult(item);\n    setCurrentImage(item.originalImage);\n    setSelectedStyle(item.style);\n  };\n\n  return (\n    <div className=\"min-h-screen bg-slate-950 text-slate-200 selection:bg-indigo-500/30\">\n      {/* Header */}\n      <header className=\"border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50\">\n        <div className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between\">\n          <div className=\"flex items-center space-x-3\">\n            <div className=\"w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20\">\n              <Zap className=\"text-white w-5 h-5\" />\n            </div>\n            <h1 className=\"text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400\">\n              AI Vectorizer Studio\n            </h1>\n          </div>\n          <div className=\"flex items-center space-x-4\">\n            <a href=\"https://ai.google.dev\" target=\"_blank\" rel=\"noreferrer\" className=\"text-xs font-medium text-slate-500 hover:text-indigo-400 transition-colors\">\n              Powered by Gemini 2.5\n            </a>\n          </div>\n        </div>\n      </header>\n\n      <main className=\"max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8\">\n        <div className=\"grid grid-cols-1 lg:grid-cols-12 gap-8 h-[calc(100vh-8rem)]\">\n          \n          {/* Left Panel: Controls & Input */}\n          <div className=\"lg:col-span-4 flex flex-col space-y-6 h-full overflow-y-auto pr-2 custom-scrollbar\">\n            \n            {/* Input Section */}\n            <section className=\"space-y-4\">\n              <div className=\"flex items-center justify-between\">\n                <h2 className=\"text-sm font-semibold text-slate-400 uppercase tracking-wider\">Input Source</h2>\n              </div>\n              <ImageUploader \n                currentImage={currentImage} \n                onImageSelected={setCurrentImage} \n                onClear={() => {\n                  setCurrentImage(null);\n                  setResult(null);\n                }}\n              />\n            </section>\n\n            {/* Style Selection */}\n            <section className=\"space-y-4\">\n              <h2 className=\"text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center\">\n                <Layers className=\"w-4 h-4 mr-2\" />\n                Vector Style\n              </h2>\n              <div className=\"grid grid-cols-2 gap-3\">\n                {Object.values(VectorStyle).map((style) => (\n                  <button\n                    key={style}\n                    onClick={() => setSelectedStyle(style)}\n                    className={`\n                      px-3 py-3 rounded-lg text-sm text-left transition-all border\n                      ${selectedStyle === style \n                        ? 'bg-indigo-600/20 border-indigo-500 text-white shadow-lg shadow-indigo-500/10' \n                        : 'bg-slate-800/50 border-slate-700 text-slate-400 hover:bg-slate-800 hover:border-slate-600'\n                      }\n                    `}\n                  >\n                    {style}\n                  </button>\n                ))}\n              </div>\n            </section>\n\n            {/* Action Button */}\n            <Button \n              onClick={handleGenerate} \n              disabled={!currentImage}\n              isLoading={isGenerating}\n              className=\"w-full py-4 text-lg shadow-xl shadow-indigo-500/20\"\n              icon={<Wand2 className=\"w-5 h-5\" />}\n            >\n              {isGenerating ? 'Vectorizing...' : 'Generate Vector'}\n            </Button>\n\n            {error && (\n              <div className=\"p-4 bg-red-900/20 border border-red-800/50 rounded-lg flex items-start space-x-3 text-red-200 text-sm\">\n                <AlertCircle className=\"w-5 h-5 flex-shrink-0 mt-0.5\" />\n                <p>{error}</p>\n              </div>\n            )}\n\n            {/* History */}\n            {history.length > 0 && (\n              <section className=\"space-y-4 pt-4 border-t border-slate-800\">\n                <h2 className=\"text-sm font-semibold text-slate-400 uppercase tracking-wider flex items-center\">\n                  <History className=\"w-4 h-4 mr-2\" />\n                  Recent\n                </h2>\n                <div className=\"space-y-2\">\n                  {history.map((item, idx) => (\n                    <button\n                      key={item.timestamp}\n                      onClick={() => loadFromHistory(item)}\n                      className=\"w-full p-2 rounded-lg bg-slate-800/30 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 flex items-center space-x-3 transition-all group\"\n                    >\n                      <div \n                        className=\"w-10 h-10 rounded bg-slate-900 p-1 overflow-hidden flex-shrink-0\"\n                        dangerouslySetInnerHTML={{ __html: item.svgContent }}\n                      />\n                      <div className=\"flex-1 text-left\">\n                        <p className=\"text-sm font-medium text-slate-300 group-hover:text-white truncate\">\n                          {item.style}\n                        </p>\n                        <p className=\"text-xs text-slate-500\">\n                          {new Date(item.timestamp).toLocaleTimeString()}\n                        </p>\n                      </div>\n                      <ChevronRight className=\"w-4 h-4 text-slate-600 group-hover:text-indigo-400\" />\n                    </button>\n                  ))}\n                </div>\n              </section>\n            )}\n          </div>\n\n          {/* Right Panel: Output */}\n          <div className=\"lg:col-span-8 h-full flex flex-col\">\n            {result ? (\n              <SvgPreview svgContent={result.svgContent} />\n            ) : (\n              <div className=\"flex-1 rounded-xl border-2 border-dashed border-slate-800 bg-slate-900/30 flex flex-col items-center justify-center text-center p-12\">\n                <div className=\"w-24 h-24 rounded-full bg-slate-800/50 flex items-center justify-center mb-6\">\n                  <Wand2 className=\"w-10 h-10 text-slate-600\" />\n                </div>\n                <h3 className=\"text-xl font-medium text-slate-300 mb-2\">Ready to Create</h3>\n                <p className=\"text-slate-500 max-w-md\">\n                  Upload an image and select a style to generate a scalable vector graphic using Gemini's vision capabilities.\n                </p>\n                <div className=\"mt-8 flex flex-wrap justify-center gap-4 opacity-50\">\n                  <div className=\"h-20 w-20 bg-slate-800 rounded animate-pulse delay-75\"></div>\n                  <div className=\"h-20 w-20 bg-slate-800 rounded animate-pulse delay-100\"></div>\n                  <div className=\"h-20 w-20 bg-slate-800 rounded animate-pulse delay-150\"></div>\n                </div>\n              </div>\n            )}\n          </div>\n\n        </div>\n      </main>\n    </div>\n  );\n};\n\nexport default App;\n"
+            }
+          ]
+        }
+      ]
+    },
+    "createdTimestamp": {
+      "seconds": 1770831500,
+      "nanos": 935000000
+    },
+    "doneTimestamp": {
+      "seconds": 1770831501,
+      "nanos": 832000000
+    }
+  },
+  {
+    "id": 26,
+    "author": "user",
+    "payload": {
+      "type": "text",
+      "text": "fix current code",
+      "files": [],
+      "fileUploads": [],
+      "cssBlocks": [],
+      "cMarkNode": {}
+    },
+    "createdTimestamp": {
+      "seconds": 1770832311,
+      "nanos": 828000000
+    }
+  },
+  {
+    "id": 27,
+    "author": "model",
+    "payload": {
+      "type": "thinking",
+      "text": "**Analyzing the Initial Files**\n\nI am currently examining the provided files to understand the existing code base. So far, I've noted that the title in `index.html` is \"AI Vectorizer Studio\". My primary focus is to identify inconsistencies or issues relative to the desired \"Image vectorizer app\" functionality.\n\n\n**Pinpointing Key Discrepancies**\n\nI've identified a significant discrepancy. The `geminiService.ts` file's prompt requests vector output, yet the service only returns base64 PNG data. Furthermore, the `App.tsx` and `types.ts` seem designed to handle and represent raster images (PNG/JPEG) or a \"fake\" SVG wrapper. I'm focusing on why this vector conversion is not present and identifying potential avenues for implementing true SVG generation.\n\n\n**Clarifying Discrepancies and Scope**\n\nI'm now focused on the disconnect between the desired \"Image Vectorizer App\" and the existing code's functionality, which centers around a \"redraw to HQ\" type approach. The `geminiService.ts` code is clearly returning base64 PNG data, not SVG, even though the initial prompt implied vector output. This reinforces my concern about the project's core purpose. I'm reassessing the requested \"fix\" in light of these discrepancies to ensure the right path forward. I am thinking about checking my generated changes against the new files, and looking for discrepancies there.\n\n\n**Refining Gemini Prompting**\n\nI am now focusing on refining the `geminiService.ts` prompt to request valid SVG code directly, rather than a raster image. I will change the model to a text-generation capable model to support text output from image input; I am considering `gemini-2.5-flash` or `gemini-3-flash-preview`. The goal is SVG generation via Gemini's vision-to-text functionality. I will need to test different models and prompts to achieve the best results.\n\n\n**Selecting the Best Model**\n\nI've determined that for SVG code generation from image input, I need a multimodal model capable of text output. I reviewed Google's model guidelines and narrowed my choices to `gemini-2.5-flash` or `gemini-3-flash-preview`. `gemini-2.5-flash-image` is not appropriate. Per the guidelines, `gemini-2.5-flash` or `gemini-3-flash-preview` seem ideal for this Vision-to-Text task. I'll test these models soon. I will need to test different models and prompts to achieve the best results.\n\n\n**Choosing the Ideal Model**\n\nI've decided to prioritize a stable and generally available model for SVG generation. After reviewing Google's documentation, I am now leaning towards using the `gemini-2.5-flash` model, although `gemini-3-flash-preview` remains an option. I'm focusing on ensuring its multimodal capabilities for image input and text output are adequate to the task. My preference is towards `gemini-2.5-flash`.\n\n\n**Confirming Model Misuse**\n\nI've confirmed my initial suspicion: The existing code in `geminiService.ts` inappropriately uses `gemini-2.5-flash-image`, a model for image *generation*, to produce SVG code. This mismatch explains the existing problems. My priority is now to change to the correct text-generation model, `gemini-2.5-flash`, which aligns with Google's guidelines, to ensure a valid SVG output.\n\n\n**Adapting UI for Vectorizing**\n\nI need to update the UI. The current code needs to handle SVG output instead of just an image URL. I must also remove the aspect ratio logic since SVGs are scalable. A new SVG previewer is necessary and the UI needs to be updated to state \"Vectorizer\", not \"Redraw to HQ\".\n\n\n\n**Designing the Vectorizer Studio**\n\nI am now focusing on designing the user interface to better reflect the new \"AI Vectorizer Studio\". I will create style selectors (like Flat, Geometric, etc.) instead of the existing text-removal control, to align with the goal of vectorization. The core change will need to involve implementing a suitable vector previewer, and the correct styling. I'll need to remove the image aspect ratio logic as SVG is infinitely scalable.\n\n\n**Revising Entry Point Files**\n\nI am now addressing the file structure discrepancies. I must correct a major issue where `index.tsx` is actually HTML; I will rename the existing file and fix the React entry to point to `index.tsx` as the core entry. This is critical for the app's functionality. I am treating the provided HTML content as `index.html`. Furthermore, I'll be overhauling `App.tsx` completely to build the AI Vectorizer Studio.\n\n\n**Refining Text Generation**\n\nI'm now clarifying the proper model identifier, per the guidelines, for text generation from images. I will test `gemini-flash-latest`, confirming the correct model name before deployment, to address the core logic. I'm focusing on ensuring its multimodal capabilities for image input and text output are adequate to the task.\n\n\n",
+      "cMarkNode": {}
+    },
+    "createdTimestamp": {
+      "seconds": 1770832311,
+      "nanos": 828000000
+    },
+    "doneTimestamp": {
+      "seconds": 1770832357,
+      "nanos": 283000000
+    }
+  },
+  {
+    "id": 28,
+    "author": "model",
+    "payload": {
+      "type": "text",
+      "text": "To fix the current code and transform the application into a functional AI Vectorizer Studio that outputs actual SVG code instead of raster images, I will update the service logic, the main application UI, and the type definitions.\n\nHere are the changes:\n\n1.  **`services/geminiService.ts`**: Switch from the image generation model to a multimodal text generation model (`gemini-2.5-flash` or `gemini-3-flash-preview`) to analyze the input image and output raw SVG code.\n2.  **`App.tsx`**: Complete UI overhaul to support the vectorization workflow (Style selection -> Generate -> Preview SVG -> Download).\n3.  **`components/SvgPreview.tsx`**: A new component to render the generated SVG string, zoom/pan, and handle downloads.\n4.  **`types.ts`**: Define vector styles and result interfaces.\n5.  **`index.tsx`**: Fix the file content (it currently contains HTML in your provided files) to be the correct React entry point.\n\n",
+      "cMarkNode": {}
+    },
+    "createdTimestamp": {
+      "seconds": 1770832357,
+      "nanos": 283000000
+    },
+    "doneTimestamp": {
+      "seconds": 1770832357,
+      "nanos": 430000000
+    }
+  },
+  {
+    "id": 29,
+    "author": "model",
+    "payload": {
+      "type": "generationTable",
+      "entries": [
+        {
+          "path": "metadata.json",
+          "generationType": 1,
+          "isDone": true,
+          "description": "Update app metadata",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "{\n  \"name\": \"AI Vectorizer Studio\",\n  \"description\": \"Transform raster images into scalable SVG vector graphics using Gemini 2.5.\",\n  \"requestFramePermissions\": []\n}"
+            }
+          ]
+        },
+        {
+          "path": "index.tsx",
+          "generationType": 1,
+          "isDone": true,
+          "description": "Fix React entry point",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\nimport App from './App';\nimport './index.css';\n\nconst rootElement = document.getElementById('root');\nif (!rootElement) {\n  throw new Error(\"Could not find root element to mount to\");\n}\n\nconst root = ReactDOM.createRoot(rootElement);\nroot.render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);"
+            }
+          ]
+        },
+        {
+          "path": "types.ts",
+          "generationType": 1,
+          "isDone": true,
+          "description": "Update types for vectorization",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "export enum VectorStyle {\n  MINIMALIST = \"Minimalist Flat Design\",\n  GEOMETRIC = \"Geometric Shapes\",\n  LINE_ART = \"Continuous Line Art\",\n  LOW_POLY = \"Low Poly Polygon\",\n  PIXEL_ART = \"Pixel Art (SVG Rects)\",\n  WIREFRAME = \"Technical Wireframe\",\n  POP_ART = \"Pop Art\",\n  STENCIL = \"Stencil / Silhouette\"\n}\n\nexport interface VectorResult {\n  svg: string;\n  original: string; // Base64\n  style: VectorStyle;\n  timestamp: number;\n}\n\nexport interface AppState {\n  currentImage: string | null;\n  isGenerating: boolean;\n  result: VectorResult | null;\n  error: string | null;\n}\n"
+            }
+          ]
+        },
+        {
+          "path": "services/geminiService.ts",
+          "generationType": 1,
+          "isDone": true,
+          "description": "Update service to generate SVG code instead of raster images",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import { GoogleGenAI } from \"@google/genai\";\nimport { VectorStyle } from \"../types\";\n\n// We use the flash preview model for fast multimodal understanding and code generation\nconst MODEL_NAME = 'gemini-2.5-flash';\n\nconst cleanSvgCode = (text: string): string => {\n  // Remove markdown code blocks\n  let cleaned = text.replace(/```svg/gi, '').replace(/```xml/gi, '').replace(/```/g, '').trim();\n  \n  // Extract just the SVG tag content if there's extra text\n  const svgStart = cleaned.indexOf('<svg');\n  const svgEnd = cleaned.lastIndexOf('</svg>');\n  \n  if (svgStart !== -1 && svgEnd !== -1) {\n    cleaned = cleaned.substring(svgStart, svgEnd + 6);\n  }\n  \n  return cleaned;\n};\n\nexport const generateVectorSvg = async (\n  base64Image: string,\n  style: VectorStyle\n): Promise<string> => {\n  if (!process.env.API_KEY) {\n    throw new Error(\"API Key is missing. Please check your environment configuration.\");\n  }\n\n  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });\n  \n  // Ensure cleaner base64 without headers for the API if needed, \n  // though the API is generally robust.\n  const base64Data = base64Image.includes(',') \n    ? base64Image.split(',')[1] \n    : base64Image;\n\n  const prompt = `\n    Role: Expert SVG Artist and Coder.\n    Task: Convert the provided image into a clean, scalable SVG (Scalable Vector Graphics) file.\n    \n    Target Style: ${style}\n    \n    Strict Constraints:\n    1. Output ONLY valid SVG code. No markdown, no explanations.\n    2. DO NOT use <image> tags with base64 data. You must draw the image using <path>, <rect>, <circle>, <polygon>, etc.\n    3. Simplify the details. Do not attempt pixel-perfect photorealism. Create an artistic vector interpretation.\n    4. Use a limited, harmonious color palette based on the original image.\n    5. Ensure the 'viewBox' matches the aspect ratio of the image.\n    6. Code must be efficient and under 8KB if possible.\n    \n    For ${style}:\n    ${getStyleInstructions(style)}\n  `;\n\n  try {\n    const response = await ai.models.generateContent({\n      model: MODEL_NAME,\n      contents: {\n        parts: [\n          {\n            inlineData: {\n              mimeType: 'image/jpeg', // Standardize on jpeg for input usually works best\n              data: base64Data\n            }\n          },\n          {\n            text: prompt\n          }\n        ]\n      }\n    });\n\n    const text = response.text;\n    if (!text) {\n      throw new Error(\"Gemini returned empty response.\");\n    }\n\n    const svg = cleanSvgCode(text);\n    \n    if (!svg.startsWith('<svg')) {\n      throw new Error(\"Failed to generate valid SVG code.\");\n    }\n\n    return svg;\n\n  } catch (error) {\n    console.error(\"Vectorization failed:\", error);\n    throw error;\n  }\n};\n\nfunction getStyleInstructions(style: VectorStyle): string {\n  switch (style) {\n    case VectorStyle.MINIMALIST:\n      return \"Use large flat areas of color, remove small details, use smooth curves.\";\n    case VectorStyle.GEOMETRIC:\n      return \"Construct the image entirely out of geometric primitives (circles, triangles, squares).\";\n    case VectorStyle.LINE_ART:\n      return \"Use strokes only (no fill), continuous lines, varying stroke width for depth.\";\n    case VectorStyle.LOW_POLY:\n      return \"Use a mesh of triangles with flat colors to create a 3D low-poly effect.\";\n    case VectorStyle.PIXEL_ART:\n      return \"Use a grid of <rect> elements to simulate pixel art. Keep resolution low (e.g. 64x64 grid).\";\n    case VectorStyle.WIREFRAME:\n      return \"Use thin strokes, transparent fills, and connect key points like a 3D model wireframe.\";\n    case VectorStyle.STENCIL:\n      return \"High contrast, 2-3 colors max, distinct separation between light and dark areas.\";\n    default:\n      return \"Balance detail with simplicity.\";\n  }\n}\n"
+            }
+          ]
+        },
+        {
+          "path": "components/SvgPreview.tsx",
+          "generationType": 1,
+          "isDone": true,
+          "description": "New component to handle SVG rendering and interaction",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useState } from 'react';\nimport { Download, Copy, Check, ZoomIn, ZoomOut, Maximize } from 'lucide-react';\n\ninterface SvgPreviewProps {\n  svgContent: string;\n}\n\nexport const SvgPreview: React.FC<SvgPreviewProps> = ({ svgContent }) => {\n  const [scale, setScale] = useState(1);\n  const [copied, setCopied] = useState(false);\n\n  const handleDownload = () => {\n    const blob = new Blob([svgContent], { type: 'image/svg+xml' });\n    const url = URL.createObjectURL(blob);\n    const a = document.createElement('a');\n    a.href = url;\n    a.download = `vector-art-${Date.now()}.svg`;\n    document.body.appendChild(a);\n    a.click();\n    document.body.removeChild(a);\n    URL.revokeObjectURL(url);\n  };\n\n  const handleCopy = () => {\n    navigator.clipboard.writeText(svgContent);\n    setCopied(true);\n    setTimeout(() => setCopied(false), 2000);\n  };\n\n  return (\n    <div className=\"flex flex-col h-full bg-slate-900 rounded-xl overflow-hidden border border-slate-700 shadow-xl\">\n      {/* Toolbar */}\n      <div className=\"flex items-center justify-between px-4 py-2 bg-slate-800 border-b border-slate-700\">\n        <div className=\"flex items-center gap-2\">\n          <span className=\"text-xs font-bold text-slate-400 uppercase tracking-wider\">Vector Output</span>\n          <span className=\"bg-indigo-500/20 text-indigo-300 text-[10px] px-1.5 py-0.5 rounded border border-indigo-500/30\">SVG</span>\n        </div>\n        <div className=\"flex items-center gap-1\">\n          <button onClick={() => setScale(s => Math.max(0.5, s - 0.25))} className=\"p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors\" title=\"Zoom Out\">\n            <ZoomOut size={16} />\n          </button>\n          <span className=\"text-xs font-mono text-slate-500 w-12 text-center\">{Math.round(scale * 100)}%</span>\n          <button onClick={() => setScale(s => Math.min(4, s + 0.25))} className=\"p-1.5 text-slate-400 hover:text-white hover:bg-slate-700 rounded transition-colors\" title=\"Zoom In\">\n            <ZoomIn size={16} />\n          </button>\n          <div className=\"w-px h-4 bg-slate-700 mx-2\" />\n          <button onClick={handleCopy} className=\"p-1.5 text-slate-400 hover:text-indigo-400 hover:bg-slate-700 rounded transition-colors\" title=\"Copy Code\">\n            {copied ? <Check size={16} /> : <Copy size={16} />}\n          </button>\n          <button onClick={handleDownload} className=\"p-1.5 text-slate-400 hover:text-emerald-400 hover:bg-slate-700 rounded transition-colors\" title=\"Download SVG\">\n            <Download size={16} />\n          </button>\n        </div>\n      </div>\n\n      {/* Preview Area */}\n      <div className=\"flex-1 overflow-auto relative bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-slate-950 flex items-center justify-center p-8\">\n        <div \n          className=\"absolute inset-0 opacity-10 pointer-events-none\"\n          style={{ \n            backgroundImage: 'linear-gradient(45deg, #333 25%, transparent 25%), linear-gradient(-45deg, #333 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #333 75%), linear-gradient(-45deg, transparent 75%, #333 75%)',\n            backgroundSize: '20px 20px',\n            backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' \n          }} \n        />\n        \n        <div \n          className=\"relative z-10 transition-transform duration-200 ease-out shadow-2xl origin-center bg-transparent\"\n          style={{ transform: `scale(${scale})` }}\n          dangerouslySetInnerHTML={{ __html: svgContent }}\n        />\n      </div>\n    </div>\n  );\n};\n"
+            }
+          ]
+        },
+        {
+          "path": "App.tsx",
+          "generationType": 1,
+          "isDone": true,
+          "description": "Main application logic for Vectorizer Studio",
+          "diffs": [
+            {
+              "target": "",
+              "replacement": "import React, { useState } from 'react';\nimport { ImageDropzone } from './components/ImageDropzone';\nimport { SvgPreview } from './components/SvgPreview';\nimport { generateVectorSvg } from './services/geminiService';\nimport { VectorStyle, VectorResult } from './types';\nimport { Wand2, Layers, AlertCircle, Sparkles } from 'lucide-react';\n\nfunction App() {\n  const [currentImage, setCurrentImage] = useState<string | null>(null);\n  const [selectedStyle, setSelectedStyle] = useState<VectorStyle>(VectorStyle.MINIMALIST);\n  const [isGenerating, setIsGenerating] = useState(false);\n  const [result, setResult] = useState<VectorResult | null>(null);\n  const [error, setError] = useState<string | null>(null);\n\n  const handleImageSelected = (base64: string) => {\n    setCurrentImage(base64);\n    setResult(null);\n    setError(null);\n  };\n\n  const handleGenerate = async () => {\n    if (!currentImage) return;\n    \n    setIsGenerating(true);\n    setError(null);\n    \n    try {\n      const svgCode = await generateVectorSvg(currentImage, selectedStyle);\n      \n      setResult({\n        svg: svgCode,\n        original: currentImage,\n        style: selectedStyle,\n        timestamp: Date.now()\n      });\n    } catch (err: any) {\n      setError(err.message || \"Failed to vectorize image. Try a different image or style.\");\n    } finally {\n      setIsGenerating(false);\n    }\n  };\n\n  return (\n    <div className=\"min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-indigo-500/30\">\n      \n      {/* Header */}\n      <header className=\"border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50\">\n        <div className=\"max-w-7xl mx-auto px-4 h-16 flex items-center justify-between\">\n          <div className=\"flex items-center gap-3\">\n            <div className=\"w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/20\">\n              <Sparkles className=\"text-white w-5 h-5\" />\n            </div>\n            <h1 className=\"text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400\">\n              AI Vectorizer Studio\n            </h1>\n          </div>\n          <div className=\"text-xs font-mono text-slate-500 px-3 py-1 bg-slate-900 rounded-full border border-slate-800\">\n            Gemini 2.5 Flash\n          </div>\n        </div>\n      </header>\n\n      <main className=\"max-w-7xl mx-auto p-4 lg:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6 h-[calc(100vh-4rem)]\">\n        \n        {/* Left Panel: Inputs */}\n        <div className=\"lg:col-span-4 flex flex-col gap-6 overflow-y-auto pb-8 custom-scrollbar\">\n          \n          {/* Upload Section */}\n          <section className=\"space-y-3\">\n            <h2 className=\"text-xs font-bold text-slate-500 uppercase tracking-wider\">Input Source</h2>\n            {currentImage ? (\n              <div className=\"relative group rounded-xl overflow-hidden border border-slate-700 bg-slate-900 shadow-xl\">\n                <img \n                  src={currentImage} \n                  alt=\"Source\" \n                  className=\"w-full h-48 object-contain bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-90\" \n                />\n                <button \n                  onClick={() => {\n                    setCurrentImage(null);\n                    setResult(null);\n                  }}\n                  className=\"absolute top-2 right-2 p-1.5 bg-slate-900/80 hover:bg-red-500 text-white rounded-lg backdrop-blur-sm transition-colors border border-slate-700\"\n                >\n                  <svg xmlns=\"http://www.w3.org/2000/svg\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" strokeWidth=\"2\" strokeLinecap=\"round\" strokeLinejoin=\"round\"><path d=\"M18 6 6 18\"/><path d=\"m6 6 12 12\"/></svg>\n                </button>\n              </div>\n            ) : (\n              <ImageDropzone onImageSelected={handleImageSelected} />\n            )}\n          </section>\n\n          {/* Style Selector */}\n          <section className=\"space-y-3\">\n            <div className=\"flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider\">\n              <Layers size={14} />\n              <span>Vector Style</span>\n            </div>\n            <div className=\"grid grid-cols-1 sm:grid-cols-2 gap-2\">\n              {Object.values(VectorStyle).map((style) => (\n                <button\n                  key={style}\n                  onClick={() => setSelectedStyle(style)}\n                  disabled={isGenerating}\n                  className={`\n                    px-3 py-3 rounded-lg text-sm text-left transition-all border relative overflow-hidden group\n                    ${selectedStyle === style \n                      ? 'bg-indigo-600/10 border-indigo-500 text-indigo-200' \n                      : 'bg-slate-900 border-slate-800 text-slate-400 hover:border-slate-700 hover:bg-slate-800'\n                    }\n                  `}\n                >\n                  <span className=\"relative z-10\">{style}</span>\n                  {selectedStyle === style && (\n                    <div className=\"absolute inset-0 bg-indigo-500/5 z-0\" />\n                  )}\n                </button>\n              ))}\n            </div>\n          </section>\n\n          {/* Generate Button */}\n          <button\n            onClick={handleGenerate}\n            disabled={!currentImage || isGenerating}\n            className={`\n              w-full py-4 rounded-xl font-semibold text-lg shadow-lg flex items-center justify-center gap-2 transition-all duration-300\n              ${!currentImage || isGenerating \n                ? 'bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-700' \n                : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white hover:scale-[1.02] shadow-indigo-500/25 border border-indigo-500/50'\n              }\n            `}\n          >\n            {isGenerating ? (\n              <>\n                <svg className=\"animate-spin h-5 w-5\" viewBox=\"0 0 24 24\">\n                  <circle className=\"opacity-25\" cx=\"12\" cy=\"12\" r=\"10\" stroke=\"currentColor\" strokeWidth=\"4\" fill=\"none\" />\n                  <path className=\"opacity-75\" fill=\"currentColor\" d=\"M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z\" />\n                </svg>\n                <span>Vectorizing...</span>\n              </>\n            ) : (\n              <>\n                <Wand2 size={20} />\n                <span>Generate SVG</span>\n              </>\n            )}\n          </button>\n\n          {error && (\n            <div className=\"p-4 bg-red-900/20 border border-red-800/50 rounded-lg flex gap-3 text-red-200 text-sm animate-in fade-in slide-in-from-top-2\">\n              <AlertCircle className=\"w-5 h-5 flex-shrink-0 text-red-400\" />\n              <p>{error}</p>\n            </div>\n          )}\n        </div>\n\n        {/* Right Panel: Output */}\n        <div className=\"lg:col-span-8 flex flex-col h-full min-h-[400px]\">\n          {result ? (\n            <SvgPreview svgContent={result.svg} />\n          ) : (\n            <div className=\"flex-1 rounded-xl border-2 border-dashed border-slate-800 bg-slate-900/20 flex flex-col items-center justify-center text-center p-12\">\n              <div className=\"w-20 h-20 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mb-6 shadow-2xl\">\n                <Wand2 className=\"w-8 h-8 text-slate-600\" />\n              </div>\n              <h3 className=\"text-xl font-medium text-slate-300 mb-2\">Ready to Vectorize</h3>\n              <p className=\"text-slate-500 max-w-sm mx-auto leading-relaxed\">\n                Upload a raster image to convert it into clean, scalable SVG paths using Gemini's vision capabilities.\n              </p>\n              \n              <div className=\"mt-12 grid grid-cols-3 gap-4 opacity-30 pointer-events-none\">\n                 <div className=\"w-24 h-24 rounded border border-slate-700 bg-slate-800/50\"></div>\n                 <div className=\"w-24 h-24 rounded border border-slate-700 bg-slate-800/50\"></div>\n                 <div className=\"w-24 h-24 rounded border border-slate-700 bg-slate-800/50\"></div>\n              </div>\n            </div>\n          )}\n        </div>\n\n      </main>\n    </div>\n  );\n}\n\nexport default App;\n"
+            }
+          ]
+        }
+      ]
+    },
+    "createdTimestamp": {
+      "seconds": 1770832359,
+      "nanos": 722000000
+    },
+    "doneTimestamp": {
+      "seconds": 1770832360,
+      "nanos": 682000000
+    }
+  }
+]

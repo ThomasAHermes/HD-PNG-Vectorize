@@ -266,11 +266,11 @@ function App() {
         )}
 
         {sourceImage && (
-          <div className="flex flex-col lg:flex-row gap-6 h-full min-h-0 max-h-[calc(100vh-160px)]">
+          <div className="flex flex-col lg:flex-row gap-6 lg:h-full lg:min-h-0 lg:max-h-[calc(100vh-160px)]">
             
             {/* Left Column: Source & Controls */}
-            <div className="flex-1 flex flex-col gap-4 min-h-0">
-              <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 flex-1 flex flex-col overflow-hidden relative min-h-0">
+            <div className="flex-1 flex flex-col gap-4 lg:min-h-0">
+              <div className="bg-slate-900 rounded-2xl p-4 border border-slate-800 flex-1 flex flex-col overflow-hidden relative min-h-[300px] lg:min-h-0">
                 <div className="absolute top-6 left-6 bg-black/60 backdrop-blur text-white text-xs px-2 py-1 rounded z-10 shadow-md">
                   Original
                 </div>
@@ -399,7 +399,7 @@ function App() {
             </div>
 
             {/* Right Column: Result */}
-            <div className="flex-1 bg-slate-900 rounded-2xl p-4 border border-slate-800 flex flex-col relative overflow-hidden min-h-0">
+            <div className="flex-1 bg-slate-900 rounded-2xl p-4 border border-slate-800 flex flex-col relative overflow-hidden min-h-[400px] lg:min-h-0">
                <div className="absolute top-6 left-6 bg-blue-600/90 backdrop-blur text-white text-xs px-2 py-1 rounded z-20 shadow-lg">
                   HD Result
                </div>

@@ -1,4 +1,4 @@
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI } from "@google/genai/web";
 
 // Use Gemini 2.5 Flash Image which is performant and works with standard keys
 const MODEL_NAME = 'gemini-2.5-flash-image';
@@ -22,20 +22,21 @@ export const generateVectorizedImage = async (
   // Clean base64 string if it contains the data URI prefix
   const cleanBase64 = base64Image.replace(/^data:image\/(png|jpeg|jpg|webp);base64,/, '');
 
-  // Ultra-strict prompt for fidelity
+  // Strict prompt based on user instructions
   const prompt = `
-  TASK: Create a pixel-perfect vector-style recreation of the attached image.
+  TASK: Redraw the attached image entirely from scratch.
   
-  STRICT CONSTRAINTS (MUST FOLLOW):
-  1. EXACT TRACE: The output must preserve the exact geometry, pose, facial expressions, and proportions of the original image. Do not change the shape of eyes, hands, or objects.
-  2. NO HALLUCINATIONS: Do not add details that are not in the source. Do not remove details that are in the source (except text if specified).
-  3. STYLE: Clean vector art. Flat colors, smooth curves, no noise, no compression artifacts.
-  4. FIDELITY: If the original image has a specific facial expression (e.g., squinting), the output MUST have the exact same expression. If the hand is in a specific gesture, the output MUST have the exact same gesture.
-  5. ROLE: Act as a photocopier that applies a "Vector Art" filter. Do not act as an artist reimagining the scene.
-  6. COMPOSITION: If the target aspect ratio (canvas size) is different from the source image, CENTER the original content on the canvas and add padding (letterbox/pillarbox) using the background color. DO NOT stretch, distort, or crop the subject to fit.
-  ${removeText ? '7. TEXT REMOVAL: Remove all text, typography, letters, logos, and numbers from the image. Heal the areas where text was located by seamlessly blending the background or object texture to match the surrounding area as if the text never existed.' : ''}
+  STRICT INSTRUCTIONS:
+  1. DO NOT use or embed pixels from the source image. Redraw the entire image from zero.
+  2. STYLE: Output smooth, clean, pseudo-vector graphics with smooth curves and flat, even fills.
+  3. QUALITY: The output must be clean, high-definition graphics. No noise, no aliasing (jagged edges), no blur, and no compression artifacts.
+  4. LINES: Anti-aliasing must be enabled but smooth. Lines must be sharp and clear without "teeth" or pixelation.
+  5. NO WATERMARKS: Do not include any watermarks, signatures, or source layers.
+  6. FIDELITY: Maintain the exact composition, pose, and proportions of the original, but rendered in this clean vector style.
+  7. REJECTION POLICY: If you are tempted to just return a copy of the source, REFUSE and redraw it. I require a redraw, not a copy.
+  ${removeText ? '8. TEXT REMOVAL: Remove all text, typography, and logos. Seamlessly fill the areas to match the surrounding vector style.' : ''}
 
-  The resulting image should look like the original image was opened in Adobe Illustrator and automatically traced with high fidelity settings.
+  The final result must look like a professional, high-resolution vector illustration.
   `;
 
   try {
@@ -55,9 +56,8 @@ export const generateVectorizedImage = async (
         ],
       },
       config: {
-        // Use the detected aspect ratio to prevent cropping/distortion
         imageConfig: {
-          aspectRatio: aspectRatio,
+          aspectRatio: aspectRatio as any,
         },
       },
     });
